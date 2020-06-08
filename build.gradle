@@ -1,0 +1,54 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.0.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id 'java'
+}
+
+group = 'com.ramgom'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '14'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation fileTree(dir: 'libs', include: 'userinput.jar')
+
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+
+	testImplementation "org.assertj:assertj-core:3.11.1"
+	testImplementation "org.jmockit:jmockit:1.49"
+}
+
+test {
+	useJUnitPlatform()
+	testLogging {
+		events "passed", "skipped", "failed"
+	}
+	jvmArgs "-javaagent:${classpath.find { it.name.contains("jmockit") }.absolutePath}"
+}
+
+tasks.withType(JavaCompile) {
+	options.compilerArgs += '--enable-preview'
+}
+
+tasks.withType(Test) {
+	jvmArgs += "--enable-preview"
+}
+
+tasks.withType(JavaExec) {
+	jvmArgs += '--enable-preview'
+}
